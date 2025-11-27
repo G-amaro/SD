@@ -1,90 +1,98 @@
 package client;
 
-import java.io.*;
+import common.TaggedConnection;
+import common.TaggedConnection.Frame;
+
+import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.locks.*;
-
-public class ConnectionManager implements AutoCloseable{
-    private Socket socket;
-    private DataInputStream dis;
-    private DataOutputStream dos;
-
-    private final Lock sendLock = new ReentrantLock();
-    private final Lock mapLock = new ReentrantLock();
-    private final Condition response = mapLock.newCondition();
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 
-    private Map<Long, byte[]> responses = new HashMap<>();
-
+public class Demultiplexer implements AutoCloseable{
+    private final TaggedConnection conn;
+    private final Lock lock = new ReentrantLock();
+    private final Map<Long, Entry> responses = new HashMap<>();
     private long lastId = 0;
-    private boolean running = true;
+    public Exception failure = null;
 
-    public ConnectionManager(String host, int port) throws IOException {
-        this.socket = new Socket(host, port);
-        this.dis = new DataInputStream(socket.getInputStream());
-        this.dos = new DataOutputStream(socket.getOutputStream());
+    private class Entry{
+        byte[] data = null;
+        final Condition cond = lock.newCondition();
+    }
+
+    public Demultiplexer(String host, int port) throws IOException {
+        Socket socket = new Socket(host, port);
+        this.conn = new TaggedConnection(socket);
 
         Thread reader = new Thread(this::readLoop);
         reader.start();
     }
 
     public byte[] sendRequest(int opCode, byte[] data) throws IOException {
-        long myId;
+        long id;
+        Entry myEntry = new  Entry();
 
-        sendLock.lock();
-        try{
-            myId = ++lastId;
-            dos.writeInt(8+4+ data.length);
-            dos.writeLong(myId);
-            dos.writeInt(opCode);
-            dos.write(data);
-            dos.flush();
-        } finally {
-            sendLock.unlock();
+        lock.lock();
+        try {
+            id = ++lastId;
+            responses.put(id, myEntry);
+        }finally {
+            lock.unlock();
         }
 
-        mapLock.lock();
+        conn.send(id, opCode, data);
+
+        lock.lock();
         try{
-            while(!responses.containsKey(myId)){
+            while (myEntry.data == null && failure == null){
                 try{
-                    response.await();
-                }catch(InterruptedException e){
-                    throw new IOException("Interrupted");
+                    myEntry.cond.await();
+                }catch (InterruptedException e){
+                    throw new IOException("Interrompido");
                 }
             }
-            return responses.remove(myId);
-        } finally{
-            mapLock.unlock();
+            if (failure != null) throw new IOException("Conecção", failure);
+            return myEntry.data;
+        }finally {
+            lock.unlock();
         }
-
     }
 
     private void readLoop(){
-        try{
-            while(running){
-                int size = dis.readInt();
-                long id = dis.readLong();
-                byte[] data = new byte[size - 8]; //total - ID length
-                dis.readFully(data);
-
-                mapLock.lock();
+        try {
+            while (true) {
+                Frame frame = conn.receive();
+                lock.lock();
                 try {
-                    responses.put(id, data);
-                    response.signalAll();
-                }finally{
-                    mapLock.unlock();
+                    Entry e = responses.get(frame.tag);
+                    if (e != null) {
+                        e.data = frame.data;
+                        e.cond.signal();
+                    }
+                }finally {
+                    lock.unlock();
                 }
             }
-        }catch (IOException e){
-            System.out.println("Conecção fechada.");
+        }catch (Exception e){
+            lock.lock();
+            try {
+                failure = e;
+                responses.values().forEach(entry-> entry.cond.signalAll());
+
+            }finally {
+                lock.unlock();
+            }
         }
     }
 
+    @Override
     public void close() throws IOException{
-        running = false;
-        socket.close();
+
+        conn.close();
     }
 
 
