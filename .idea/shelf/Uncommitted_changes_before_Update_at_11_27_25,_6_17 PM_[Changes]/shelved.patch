@@ -1,0 +1,433 @@
+Index: src/test/MockServer.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package test;\n\npublic class MockServer {\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/test/MockServer.java b/src/test/MockServer.java
+--- a/src/test/MockServer.java	(revision 033b796c0d956ed8e23c158a629fd113cf851046)
++++ b/src/test/MockServer.java	(date 1764267352457)
+@@ -1,4 +1,87 @@
+ package test;
+ 
++import common.OpCodes;
++import java.io.*;
++import java.net.ServerSocket;
++import java.net.Socket;
++
+ public class MockServer {
+-}
++
++    public static void main(String[] args) {
++        System.out.println(">>> MOCK SERVER INICIADO NA PORTA 12345 <<<");
++        System.out.println("Esperando conexão do Cliente...");
++
++        try (ServerSocket ss = new ServerSocket(12345)) {
++            while (true) {
++                Socket s = ss.accept();
++                System.out.println("Novo cliente conectado!");
++
++                // Cria uma thread para atender este cliente
++                new Thread(() -> handleClient(s)).start();
++            }
++        } catch (IOException e) {
++            e.printStackTrace();
++        }
++    }
++
++    private static void handleClient(Socket s) {
++        try (DataInputStream in = new DataInputStream(s.getInputStream());
++             DataOutputStream out = new DataOutputStream(s.getOutputStream())) {
++
++            while (true) {
++                // --- 1. LER PEDIDO (Protocolo: Size -> ID -> OpCode -> Data) ---
++
++                // O teu ConnectionManager envia o tamanho primeiro
++                int size = in.readInt();
++
++                // Ler ID e OpCode
++                long id = in.readLong();
++                int opCode = in.readInt();
++
++                // Calcular tamanho do payload (Size total - 8 bytes do ID - 4 bytes do OpCode)
++                int payloadSize = size - 8 - 4;
++                byte[] payload = new byte[payloadSize];
++                in.readFully(payload);
++
++                System.out.println("Recebido Pedido -> ID: " + id + " | OpCode: " + opCode);
++
++                // --- 2. PROCESSAR (Fingir que fazemos algo) ---
++                boolean sucesso = true;
++
++                // Exemplo simples: Descodificar o payload só para mostrar no log
++                DataInputStream payloadIn = new DataInputStream(new ByteArrayInputStream(payload));
++                if (opCode == OpCodes.LOGIN) {
++                    String user = payloadIn.readUTF();
++                    System.out.println("   > Tentativa de Login: " + user);
++                } else if (opCode == OpCodes.ADD_VENDA) {
++                    String prod = payloadIn.readUTF();
++                    int qtd = payloadIn.readInt();
++                    System.out.println("   > Venda: " + qtd + "x " + prod);
++                }
++
++                // --- 3. ENVIAR RESPOSTA (Protocolo: Size -> ID -> Data) ---
++
++                // Preparar a resposta (um boolean true)
++                ByteArrayOutputStream baos = new ByteArrayOutputStream();
++                DataOutputStream dos = new DataOutputStream(baos);
++                dos.writeBoolean(sucesso); // Responde sempre TRUE
++                byte[] responseData = baos.toByteArray();
++
++                // Enviar de volta
++                // IMPORTANTE: O teu ConnectionManager espera (Size -> ID -> Data)
++                out.writeInt(8 + 4 + responseData.length); // Tamanho (ID + Dados)
++                out.writeLong(id); // O MESMO ID que recebemos
++                out.writeInt(0);
++                out.write(responseData);               // O boolean
++                out.flush();
++
++                System.out.println("   < Resposta enviada (ID " + id + ")");
++            }
++
++        } catch (EOFException e) {
++            System.out.println("Cliente desconectou-se.");
++        } catch (IOException e) {
++            e.printStackTrace();
++        }
++    }
++}
+\ No newline at end of file
+Index: src/client/Demultiplexer.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package client;\n\nimport java.io.*;\nimport java.net.Socket;\nimport java.util.HashMap;\nimport java.util.Map;\nimport java.util.concurrent.locks.*;\n\npublic class ConnectionManager implements AutoCloseable{\n    private Socket socket;\n    private DataInputStream dis;\n    private DataOutputStream dos;\n\n    private final Lock sendLock = new ReentrantLock();\n    private final Lock mapLock = new ReentrantLock();\n    private final Condition response = mapLock.newCondition();\n\n\n    private Map<Long, byte[]> responses = new HashMap<>();\n\n    private long lastId = 0;\n    private boolean running = true;\n\n    public ConnectionManager(String host, int port) throws IOException {\n        this.socket = new Socket(host, port);\n        this.dis = new DataInputStream(socket.getInputStream());\n        this.dos = new DataOutputStream(socket.getOutputStream());\n\n        Thread reader = new Thread(this::readLoop);\n        reader.start();\n    }\n\n    public byte[] sendRequest(int opCode, byte[] data) throws IOException {\n        long myId;\n\n        sendLock.lock();\n        try{\n            myId = ++lastId;\n            dos.writeInt(8+4+ data.length);\n            dos.writeLong(myId);\n            dos.writeInt(opCode);\n            dos.write(data);\n            dos.flush();\n        } finally {\n            sendLock.unlock();\n        }\n\n        mapLock.lock();\n        try{\n            while(!responses.containsKey(myId)){\n                try{\n                    response.await();\n                }catch(InterruptedException e){\n                    throw new IOException(\"Interrupted\");\n                }\n            }\n            return responses.remove(myId);\n        } finally{\n            mapLock.unlock();\n        }\n\n    }\n\n    private void readLoop(){\n        try{\n            while(running){\n                int size = dis.readInt();\n                long id = dis.readLong();\n                byte[] data = new byte[size - 8]; //total - ID length\n                dis.readFully(data);\n\n                mapLock.lock();\n                try {\n                    responses.put(id, data);\n                    response.signalAll();\n                }finally{\n                    mapLock.unlock();\n                }\n            }\n        }catch (IOException e){\n            System.out.println(\"Conecção fechada.\");\n        }\n    }\n\n    public void close() throws IOException{\n        running = false;\n        socket.close();\n    }\n\n\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/client/Demultiplexer.java b/src/client/Demultiplexer.java
+--- a/src/client/Demultiplexer.java	(revision 033b796c0d956ed8e23c158a629fd113cf851046)
++++ b/src/client/Demultiplexer.java	(date 1764267352456)
+@@ -1,90 +1,98 @@
+ package client;
+ 
+-import java.io.*;
++import common.TaggedConnection;
++import common.TaggedConnection.Frame;
++
++import java.io.IOException;
+ import java.net.Socket;
+ import java.util.HashMap;
+ import java.util.Map;
+-import java.util.concurrent.locks.*;
+-
+-public class ConnectionManager implements AutoCloseable{
+-    private Socket socket;
+-    private DataInputStream dis;
+-    private DataOutputStream dos;
++import java.util.concurrent.locks.Condition;
++import java.util.concurrent.locks.Lock;
++import java.util.concurrent.locks.ReentrantLock;
+ 
+-    private final Lock sendLock = new ReentrantLock();
+-    private final Lock mapLock = new ReentrantLock();
+-    private final Condition response = mapLock.newCondition();
+ 
+-
+-    private Map<Long, byte[]> responses = new HashMap<>();
+-
++public class Demultiplexer implements AutoCloseable{
++    private final TaggedConnection conn;
++    private final Lock lock = new ReentrantLock();
++    private final Map<Long, Entry> responses = new HashMap<>();
+     private long lastId = 0;
+-    private boolean running = true;
++    public Exception failure = null;
+ 
+-    public ConnectionManager(String host, int port) throws IOException {
+-        this.socket = new Socket(host, port);
+-        this.dis = new DataInputStream(socket.getInputStream());
+-        this.dos = new DataOutputStream(socket.getOutputStream());
++    private class Entry{
++        byte[] data = null;
++        final Condition cond = lock.newCondition();
++    }
++
++    public Demultiplexer(String host, int port) throws IOException {
++        Socket socket = new Socket(host, port);
++        this.conn = new TaggedConnection(socket);
+ 
+         Thread reader = new Thread(this::readLoop);
+         reader.start();
+     }
+ 
+     public byte[] sendRequest(int opCode, byte[] data) throws IOException {
+-        long myId;
++        long id;
++        Entry myEntry = new  Entry();
+ 
+-        sendLock.lock();
+-        try{
+-            myId = ++lastId;
+-            dos.writeInt(8+4+ data.length);
+-            dos.writeLong(myId);
+-            dos.writeInt(opCode);
+-            dos.write(data);
+-            dos.flush();
+-        } finally {
+-            sendLock.unlock();
++        lock.lock();
++        try {
++            id = ++lastId;
++            responses.put(id, myEntry);
++        }finally {
++            lock.unlock();
+         }
+ 
+-        mapLock.lock();
++        conn.send(id, opCode, data);
++
++        lock.lock();
+         try{
+-            while(!responses.containsKey(myId)){
++            while (myEntry.data == null && failure == null){
+                 try{
+-                    response.await();
+-                }catch(InterruptedException e){
+-                    throw new IOException("Interrupted");
++                    myEntry.cond.await();
++                }catch (InterruptedException e){
++                    throw new IOException("Interrompido");
+                 }
+             }
+-            return responses.remove(myId);
+-        } finally{
+-            mapLock.unlock();
++            if (failure != null) throw new IOException("Conecção", failure);
++            return myEntry.data;
++        }finally {
++            lock.unlock();
+         }
+-
+     }
+ 
+     private void readLoop(){
+-        try{
+-            while(running){
+-                int size = dis.readInt();
+-                long id = dis.readLong();
+-                byte[] data = new byte[size - 8]; //total - ID length
+-                dis.readFully(data);
+-
+-                mapLock.lock();
++        try {
++            while (true) {
++                Frame frame = conn.receive();
++                lock.lock();
+                 try {
+-                    responses.put(id, data);
+-                    response.signalAll();
+-                }finally{
+-                    mapLock.unlock();
+-                }
++                    Entry e = responses.get(frame.tag);
++                    if (e != null) {
++                        e.data = frame.data;
++                        e.cond.signal();
++                    }
++                }finally {
++                    lock.unlock();
++                }
++            }
++        }catch (Exception e){
++            lock.lock();
++            try {
++                failure = e;
++                responses.values().forEach(entry-> entry.cond.signalAll());
++
++            }finally {
++                lock.unlock();
+             }
+-        }catch (IOException e){
+-            System.out.println("Conecção fechada.");
+         }
+     }
+ 
++    @Override
+     public void close() throws IOException{
+-        running = false;
+-        socket.close();
++
++        conn.close();
+     }
+ 
+ 
+Index: src/client/TextUI.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package src.client;\n\npublic class TextUI {\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/client/TextUI.java b/src/client/TextUI.java
+--- a/src/client/TextUI.java	(revision 033b796c0d956ed8e23c158a629fd113cf851046)
++++ b/src/client/TextUI.java	(date 1764267352457)
+@@ -1,4 +1,40 @@
+-package src.client;
++package client;
++
++import java.io.IOException;
++import java.util.Scanner;
++
++public class TextUI
++{
++    public static void main(String[] args) throws IOException {
++        ClientLib lib =new ClientLib();
++        Scanner sc = new Scanner(System.in);
++        try{
++            System.out.println("Cliente iniciado. Comandos:");
++            System.out.println("  login <user> <password>");
++            System.out.println("  venda <prod> <qtd> <preços>");
++
++            while (sc.hasNextLine()) {
++                String line = sc.nextLine();
++                String[] tokens = line.split(" ");
++
++                switch (tokens[0]) {
++                    case "login":
++                        System.out.println(lib.login(tokens[1], tokens[2]));
++                        break;
++
++                    case "venda":
++                        lib.addVenda(tokens[1], Integer.parseInt(tokens[2]), Double.parseDouble(tokens[3]));
++                        break;
++
++                    default:
++                        System.out.println("Opcao invalida");
++                }
++
++            }
++        }catch (Exception e) {
++            e.printStackTrace();
++        }
+ 
+-public class TextUI {
++
++    }
+ }
+Index: src/client/ClientLib.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package src.client;\n\npublic class ClientLib {\n}\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/client/ClientLib.java b/src/client/ClientLib.java
+--- a/src/client/ClientLib.java	(revision 033b796c0d956ed8e23c158a629fd113cf851046)
++++ b/src/client/ClientLib.java	(date 1764267352456)
+@@ -1,4 +1,51 @@
+-package src.client;
++package client;
++
++import common.OpCodes;
++
++import java.io.*;
++
++public class ClientLib implements AutoCloseable {
++    private Demultiplexer conn;
++
++    public ClientLib() throws IOException {
++        this.conn = new Demultiplexer("localhost",12345);
++    }
++
++    public String login(String username, String password) throws IOException {
++        ByteArrayOutputStream out = new ByteArrayOutputStream();
++        DataOutputStream dos = new DataOutputStream(out);
++
++        dos.writeUTF(username);
++        dos.writeUTF(password);
++
++
++        byte[] response = conn.sendRequest(OpCodes.LOGIN, out.toByteArray());
++
++        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(response));
++        boolean success = dis.readBoolean();
++        return success ? "Login OK" : "Erro no login";
++    }
++
++    public String addVenda(String produto, int qtd, double preco) throws IOException {
++        ByteArrayOutputStream out = new ByteArrayOutputStream();
++        DataOutputStream dos = new DataOutputStream(out);
++
++        dos.writeUTF(produto);
++        dos.writeInt(qtd);
++        dos.writeDouble(preco);
++
++
++        byte[] response = conn.sendRequest(OpCodes.ADD_VENDA, out.toByteArray());
++
++        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(response));
++        boolean success = dis.readBoolean();
++        return success ? "Add Venda OK" : "Erro ao adicionar Venda";
++    }
++
++    @Override
++    public void close() throws IOException {
++        conn.close();
++    }
+ 
+-public class ClientLib {
++    
+ }
+Index: .idea/.gitignore
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/.gitignore b/.idea/.gitignore
+new file mode 100644
+--- /dev/null	(date 1764267387318)
++++ b/.idea/.gitignore	(date 1764267387318)
+@@ -0,0 +1,8 @@
++# Default ignored files
++/shelf/
++/workspace.xml
++# Editor-based HTTP Client requests
++/httpRequests/
++# Datasource local storage ignored files
++/dataSources/
++/dataSources.local.xml
+Index: .idea/vcs.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/vcs.xml b/.idea/vcs.xml
+new file mode 100644
+--- /dev/null	(date 1764267387318)
++++ b/.idea/vcs.xml	(date 1764267387318)
+@@ -0,0 +1,4 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="VcsDirectoryMappings" defaultProject="true" />
++</project>
+\ No newline at end of file
+Index: basic.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>// Método na classe TaggedConnection ou similar\npublic void sendVenda(long tag, String produto, int qtd, double preco) throws IOException {\n    ByteArrayOutputStream baos = new ByteArrayOutputStream();\n    DataOutputStream tempOut = new DataOutputStream(baos);\n\n    // 1. Escrever o Payload temporariamente para saber o tamanho\n    tempOut.writeUTF(produto);\n    tempOut.writeInt(qtd);\n    tempOut.writeDouble(preco);\n\n    byte[] payload = baos.toByteArray();\n    jhagsdjhgda\n\n    // 2. Escrever no Socket real (com Lock para thread-safety)\n    synchronized (socketLock) {\n        realOut.writeInt(payload.length); // Header: Length\n        realOut.writeLong(tag);           // Header: Tag\n        realOut.writeInt(OpCodes.ADD_EVENT); // Header: OpCode\n        realOut.write(payload);           // Body\n        realOut.flush();\n    }\n}\n\npublic class OpCodes {\n    // Autenticação\n    public static final int AUTH_REGISTER = 0;\n    public static final int AUTH_LOGIN = 1;\n\n    // Escrita (Dia Corrente)\n    public static final int ADD_EVENT = 2;     // Adicionar venda\n    public static final int NEW_DAY = 3;       // Avançar dia (Passagem de tempo)\n\n    // Consultas (Agregações)\n    public static final int AGG_COUNT = 4;     // Quantidade total\n    public static final int AGG_VOLUME = 5;    // Volume de faturação\n    public static final int AGG_AVG = 6;       // Preço médio\n    public static final int AGG_MAX = 7;       // Preço máximo\n\n    // Lista (Payload complexo)\n    public static final int GET_EVENTS = 8;    // Filtrar eventos (Compact Serialization)\n\n    // Notificações (Blocking)\n    public static final int NOTIFY_SIMUL = 9;  // Vendas simultâneas\n    public static final int NOTIFY_CONSEC = 10;// Vendas consecutivas\n\n    // Erros\n    public static final int ERROR = 99;        // Caso algo corra mal\n}
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/basic.java b/basic.java
+--- a/basic.java	(revision 033b796c0d956ed8e23c158a629fd113cf851046)
++++ b/basic.java	(date 1764267402596)
+@@ -9,7 +9,7 @@
+     tempOut.writeDouble(preco);
+ 
+     byte[] payload = baos.toByteArray();
+-    jhagsdjhgda
++    olaaaa
+ 
+     // 2. Escrever no Socket real (com Lock para thread-safety)
+     synchronized (socketLock) {

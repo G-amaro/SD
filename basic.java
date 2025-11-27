@@ -9,7 +9,10 @@ public void sendVenda(long tag, String produto, int qtd, double preco) throws IO
     tempOut.writeDouble(preco);
 
     byte[] payload = baos.toByteArray();
+<<<<<<< HEAD
     jhagsdjhgda
+=======
+>>>>>>> 38d4627a5b1e7c8736154dabb9321207cc48c321
 
     // 2. Escrever no Socket real (com Lock para thread-safety)
     synchronized (socketLock) {
