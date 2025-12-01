@@ -55,7 +55,9 @@ public class Demultiplexer implements AutoCloseable{
                     throw new IOException("Interrompido");
                 }
             }
-            if (failure != null) throw new IOException("Conecção", failure);
+            if (failure != null) throw new IOException("Conexão", failure);
+
+            responses.remove(id);
             return myEntry.data;
         }finally {
             lock.unlock();
