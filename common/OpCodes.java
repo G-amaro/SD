@@ -1,24 +1,4 @@
-// Método na classe TaggedConnection ou similar
-public void sendVenda(long tag, String produto, int qtd, double preco) throws IOException {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    DataOutputStream tempOut = new DataOutputStream(baos);
-
-    // 1. Escrever o Payload temporariamente para saber o tamanho
-    tempOut.writeUTF(produto);
-    tempOut.writeInt(qtd);
-    tempOut.writeDouble(preco);
-
-    byte[] payload = baos.toByteArray();
-
-    // 2. Escrever no Socket real (com Lock para thread-safety)
-    synchronized (socketLock) {
-        realOut.writeInt(payload.length); // Header: Length
-        realOut.writeLong(tag);           // Header: Tag
-        realOut.writeInt(OpCodes.ADD_EVENT); // Header: OpCode
-        realOut.write(payload);           // Body
-        realOut.flush();
-    }
-}
+package common;
 
 public class OpCodes {
     // Autenticação
