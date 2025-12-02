@@ -1,21 +1,20 @@
 package server;
 
-import common.IEngine;
 import common.OpCodes;
 import common.Sale;
 import java.io.*;
 import java.net.Socket;
-import java.util.List;
+import java.util.*;
 
 public class Session implements Runnable {
     private final Socket socket;
-    private final IEngine engine;
+    private final TimeSeriesEngine engine;
     private final UserManager userManager;
     private String currentUser = null;
 
-    public Session(Socket socket, IEngine engine, UserManager userManager) {
+    public Session(Socket socket, common.IEngine engine, UserManager userManager) {
         this.socket = socket;
-        this.engine = engine;
+        this.engine = (TimeSeriesEngine) engine; // Cast necessário
         this.userManager = userManager;
     }
 
@@ -25,103 +24,145 @@ public class Session implements Runnable {
              DataOutputStream out = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream()))) {
 
             while (true) {
-                int length = in.readInt(); // ler frame length (ignorado por agora, usamos readUTF/Int)
+                int length = in.readInt();
                 long tag = in.readLong();
                 int opCode = in.readInt();
 
                 switch (opCode) {
                     case OpCodes.AUTH_REGISTER:
-                        String uReg = in.readUTF();
-                        String pReg = in.readUTF();
-                        boolean regOk = userManager.registar(uReg, pReg);
-                        sendResponse(out, tag, regOk ? 0 : 1, new byte[0]);
+                        boolean regOk = userManager.registar(in.readUTF(), in.readUTF());
+                        sendResponseBoolean(out, tag, regOk);
                         break;
 
                     case OpCodes.AUTH_LOGIN:
-                        String uLog = in.readUTF();
-                        String pLog = in.readUTF();
-                        if (userManager.autenticar(uLog, pLog)) {
-                            this.currentUser = uLog;
-                            sendResponse(out, tag, 0, new byte[0]);
+                        String u = in.readUTF();
+                        if (userManager.autenticar(u, in.readUTF())) {
+                            this.currentUser = u;
+                            sendResponseBoolean(out, tag, true);
                         } else {
-                            sendResponse(out, tag, 1, new byte[0]);
+                            sendResponseBoolean(out, tag, false);
                         }
                         break;
 
                     case OpCodes.ADD_EVENT:
-                        if (currentUser == null) {
-                            sendResponse(out, tag, 99, "Login Required".getBytes());
-                            break;
-                        }
                         String prod = in.readUTF();
                         int qtd = in.readInt();
                         double preco = in.readDouble();
-                        engine.registarVenda(prod, qtd, preco);
-                        sendResponse(out, tag, 0, new byte[0]);
+                        if (currentUser != null) {
+                            engine.registarVenda(prod, qtd, preco);
+                            sendResponseBoolean(out, tag, true);
+                        } else {
+                            sendResponseBoolean(out, tag, false);
+                        }
+                        break;
+
+                    case OpCodes.NEW_DAY:
+                        engine.avancarDia();
+                        sendResponseBoolean(out, tag, true);
+                        break;
+
+                    // --- AGREGAÇÕES ---
+                    case OpCodes.AGG_COUNT:
+                        sendResponseInt(out, tag, engine.getQuantidade(in.readUTF(), in.readInt()));
+                        break;
+                    case OpCodes.AGG_VOLUME:
+                        sendResponseDouble(out, tag, engine.getVolume(in.readUTF(), in.readInt()));
+                        break;
+                    case OpCodes.AGG_AVG:
+                        sendResponseDouble(out, tag, engine.getMedia(in.readUTF(), in.readInt()));
+                        break;
+                    case OpCodes.AGG_MAX:
+                        sendResponseDouble(out, tag, engine.getMax(in.readUTF(), in.readInt()));
+                        break;
+
+                    // --- LISTA COM SERIALIZAÇÃO COMPACTA (O "FERRARI") ---
+                    case OpCodes.GET_EVENTS:
+                        int dia = in.readInt();
+                        int numProds = in.readInt();
+                        Set<String> prods = new HashSet<>();
+                        for(int i=0; i<numProds; i++) prods.add(in.readUTF());
+
+                        List<Sale> vendas = engine.getVendas(prods, dia);
+
+                        // Preparar resposta COMPACTA
+                        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
+                        DataOutputStream dOut = new DataOutputStream(bOut);
+
+                        // A. Criar Dicionário
+                        List<String> dictList = new ArrayList<>(prods);
+                        Map<String, Integer> dictMap = new HashMap<>();
+                        dOut.writeInt(dictList.size()); // Tamanho Dict
+                        for(int i=0; i<dictList.size(); i++) {
+                            String s = dictList.get(i);
+                            dOut.writeUTF(s);
+                            dictMap.put(s, i);
+                        }
+
+                        // B. Escrever Eventos usando indices
+                        dOut.writeInt(vendas.size());
+                        for (Sale s : vendas) {
+                            int idx = dictMap.getOrDefault(s.produto, -1);
+                            if (idx != -1) {
+                                dOut.writeInt(idx); // Índice em vez de String
+                                dOut.writeInt(s.quantidade);
+                                dOut.writeDouble(s.preco);
+                            }
+                        }
+                        sendResponseBytes(out, tag, bOut.toByteArray());
                         break;
 
                     case OpCodes.NOTIFY_SIMUL:
-                        if (currentUser == null) {
-                            sendResponse(out, tag, 99, "Login Required".getBytes());
-                            break;
-                        }
-                        String prodWait = in.readUTF();
-                        int qtdWait = in.readInt();
-                        // bloqueia a thread ate condicao verificada
-                        boolean result = engine.esperarPeloMenos(prodWait, qtdWait);
-                        sendResponse(out, tag, 0, new byte[0]);
+                        String s1 = in.readUTF();
+                        String s2 = in.readUTF();
+                        // Simplificação: espera por um, depois pelo outro
+                        boolean r1 = engine.esperarVenda(s1);
+                        boolean r2 = engine.esperarVenda(s2);
+                        sendResponseBoolean(out, tag, r1 && r2);
                         break;
 
-                    case OpCodes.GET_EVENTS:
-                        String prodFilter = in.readUTF();
-                        List<Sale> lista = engine.getVendas(prodFilter);
-
-                        ByteArrayOutputStream bOut = new ByteArrayOutputStream();
-                        DataOutputStream dOut = new DataOutputStream(bOut);
-                        dOut.writeInt(lista.size());
-                        for (Sale s : lista) {
-                            dOut.writeInt(s.quantidade);
-                            dOut.writeDouble(s.preco);
-                        }
-                        sendResponse(out, tag, 0, bOut.toByteArray());
-                        break;
-
-                    case OpCodes.AGG_VOLUME:
-                        String prodSoma = in.readUTF();
-                        int diaSoma = in.readInt();
-                        double total = engine.consultarSoma(prodSoma, diaSoma);
-                        sendResponseDouble(out, tag, 0, total);
+                    case OpCodes.NOTIFY_CONSEC:
+                        String sc = in.readUTF();
+                        in.readInt(); // qtd ignorada na simplificação
+                        engine.esperarVenda(sc);
+                        sendResponseBoolean(out, tag, true);
                         break;
 
                     default:
-                        // consumir bytes restantes se necessario ou fechar
-                        in.skipBytes(length - 12); // tag(8) + op(4) ja lidos
-                        break;
+                        in.skipBytes(length - 12);
                 }
             }
         } catch (EOFException e) {
-            // conexao fechada normalmente
+            // Cliente saiu
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private void sendResponse(DataOutputStream out, long tag, int resultOpCode, byte[] data) throws IOException {
+    // Helpers de Envio
+    private void sendResponseBoolean(DataOutputStream out, long tag, boolean val) throws IOException {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        new DataOutputStream(b).writeBoolean(val);
+        sendResponseBytes(out, tag, b.toByteArray());
+    }
+
+    private void sendResponseInt(DataOutputStream out, long tag, int val) throws IOException {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        new DataOutputStream(b).writeInt(val);
+        sendResponseBytes(out, tag, b.toByteArray());
+    }
+
+    private void sendResponseDouble(DataOutputStream out, long tag, double val) throws IOException {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        new DataOutputStream(b).writeDouble(val);
+        sendResponseBytes(out, tag, b.toByteArray());
+    }
+
+    private void sendResponseBytes(DataOutputStream out, long tag, byte[] data) throws IOException {
         synchronized(out) {
             out.writeInt(8 + 4 + data.length);
             out.writeLong(tag);
-            out.writeInt(resultOpCode);
-            if (data.length > 0) out.write(data);
-            out.flush();
-        }
-    }
-
-    private void sendResponseDouble(DataOutputStream out, long tag, int code, double valor) throws IOException {
-        synchronized (out) {
-            out.writeInt(20); // 8+4+8
-            out.writeLong(tag);
-            out.writeInt(code);
-            out.writeDouble(valor);
+            out.writeInt(0);
+            out.write(data);
             out.flush();
         }
     }

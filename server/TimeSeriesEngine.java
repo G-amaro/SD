@@ -1,9 +1,10 @@
 package server;
+
 import common.IEngine;
+import common.Sale;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import common.Sale;
+import java.util.Set; // Importante!
 
 public class TimeSeriesEngine implements IEngine {
 
@@ -15,45 +16,44 @@ public class TimeSeriesEngine implements IEngine {
 
     @Override
     public void registarVenda(String produto, int qtd, double preco) {
-        // Agora delega para o gestor thread-safe
         currentDay.adicionarVenda(produto, qtd, preco);
     }
 
-    @Override
-    public double consultarSoma(String produto, int dia) {
-        // Exemplo simples: Se for o dia 0 (hoje), calculamos na hora
-        if (dia == 0) {
-            List<Sale> vendas = currentDay.getVendas(produto);
-            double total = 0;
-            for (Sale s : vendas) {
-                total += (s.quantidade * s.preco); // Ou só quantidade, depende da query
-            }
-            return total;
-        }
-        return 0.0; // Histórico (Otavio)
+    // --- NOVOS MÉTODOS DE CONSULTA ---
+    public int getQuantidade(String produto, int dia) {
+        return currentDay.consultarQuantidade(produto);
     }
 
-    @Override
-    public boolean esperarPeloMenos(String produto, int qtdDesejada) {
-        try {
-            return currentDay.esperarPorVendas(produto, qtdDesejada);
-        } catch (InterruptedException e) {
-            return false;
-        }
+    public double getVolume(String produto, int dia) {
+        return currentDay.consultarVolume(produto);
     }
+
+    public double getMedia(String produto, int dia) {
+        return currentDay.consultarMedia(produto);
+    }
+
+    public double getMax(String produto, int dia) {
+        return currentDay.consultarMaximo(produto);
+    }
+
+    public List<Sale> getVendas(Set<String> produtos, int dia) {
+        return currentDay.getVendas(produtos);
+    }
+
+    // Adaptação da notificação
+    public boolean esperarVenda(String produto) {
+        try { return currentDay.esperarPorVenda(produto); }
+        catch (InterruptedException e) { return false; }
+    }
+
+    // Métodos da Interface antiga (para não partir compilação, se a interface ainda os tiver)
+    @Override public double consultarSoma(String p, int d) { return getVolume(p, d); }
+    @Override public boolean esperarPeloMenos(String p, int q) { return esperarVenda(p); }
+    @Override public List<Sale> getVendas(String p) { return null; } // Deprecated
 
     public void avancarDia() {
-        // 1. Maciel: Limpa a RAM e dá os dados
-        Map<String, List<Sale>> vendasDeHoje = currentDay.fecharDiaEObterDados();
-
-        // 2. Otavio: Grava no disco (tens de fazer isto)
-        // storageManager.persistirDia(vendasDeHoje);
-
+        Map<String, List<Sale>> dados = currentDay.fecharDiaEObterDados();
+        // Otavio grava 'dados' aqui
         System.out.println("--- DIA AVANÇADO ---");
-    }
-
-    @Override
-    public List<Sale> getVendas(String produto) {
-        return currentDay.getVendas(produto);
     }
 }

@@ -23,7 +23,6 @@ public class CurrentDay {
             vendasDoDia.putIfAbsent(produto, new ArrayList<>());
             vendasDoDia.get(produto).add(new Sale(produto, qtd, preco));
 
-            // notificar threads a espera deste produto
             if (esperaPorProduto.containsKey(produto)) {
                 esperaPorProduto.get(produto).signalAll();
             }
@@ -33,47 +32,87 @@ public class CurrentDay {
         }
     }
 
-    public boolean esperarPorVendas(String produto, int qtdDesejada) throws InterruptedException {
+    // Permite buscar vendas de VÁRIOS produtos ao mesmo tempo
+    public List<Sale> getVendas(Set<String> produtos) {
         lock.lock();
         try {
-            esperaPorProduto.putIfAbsent(produto, lock.newCondition());
-            Condition cond = esperaPorProduto.get(produto);
-
-            while (contarVendas(produto) < qtdDesejada) {
-                cond.await();
+            List<Sale> resultado = new ArrayList<>();
+            for (String p : produtos) {
+                if (vendasDoDia.containsKey(p)) {
+                    resultado.addAll(vendasDoDia.get(p));
+                }
             }
-            return true;
+            return resultado;
         } finally {
             lock.unlock();
         }
     }
 
-    private int contarVendas(String produto) {
-        return vendasDoDia.containsKey(produto) ? vendasDoDia.get(produto).size() : 0;
-    }
-
-    public List<Sale> getVendas(String produto) {
+    public int consultarQuantidade(String produto) {
         lock.lock();
         try {
-            if (vendasDoDia.containsKey(produto)) {
-                return new ArrayList<>(vendasDoDia.get(produto));
-            }
-            return new ArrayList<>();
+            if (!vendasDoDia.containsKey(produto)) return 0;
+            return vendasDoDia.get(produto).stream().mapToInt(s -> s.quantidade).sum();
         } finally {
             lock.unlock();
         }
     }
 
-    public double consultarSoma(String produto) {
+    public double consultarVolume(String produto) {
+        lock.lock();
+        try {
+            if (!vendasDoDia.containsKey(produto)) return 0.0;
+            return vendasDoDia.get(produto).stream().mapToDouble(s -> s.quantidade * s.preco).sum();
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public double consultarMedia(String produto) {
         lock.lock();
         try {
             if (!vendasDoDia.containsKey(produto)) return 0.0;
             return vendasDoDia.get(produto).stream()
-                    .mapToDouble(s -> s.quantidade * s.preco)
-                    .sum();
+                    .mapToDouble(s -> s.preco) // Assumindo media de preço unitário
+                    .average().orElse(0.0);
         } finally {
             lock.unlock();
         }
+    }
+
+    public double consultarMaximo(String produto) {
+        lock.lock();
+        try {
+            if (!vendasDoDia.containsKey(produto)) return 0.0;
+            return vendasDoDia.get(produto).stream()
+                    .mapToDouble(s -> s.preco)
+                    .max().orElse(0.0);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    // --- LÓGICA DE NOTIFICAÇÃO DO AMARO (SIMULADA) ---
+    public boolean esperarPorVenda(String produto) throws InterruptedException {
+        lock.lock();
+        try {
+            esperaPorProduto.putIfAbsent(produto, lock.newCondition());
+            Condition c = esperaPorProduto.get(produto);
+            int nInicial = vendasDoDia.containsKey(produto) ? vendasDoDia.get(produto).size() : 0;
+
+            while (true) {
+                int nAtual = vendasDoDia.containsKey(produto) ? vendasDoDia.get(produto).size() : 0;
+                if (nAtual > nInicial) return true;
+                c.await();
+            }
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    // Método antigo (mantém para compatibilidade se necessário)
+    public boolean esperarPeloMenos(String produto, int qtd) throws InterruptedException {
+        return esperarPorVenda(produto);
     }
 
     public Map<String, List<Sale>> fecharDiaEObterDados() {
@@ -81,11 +120,7 @@ public class CurrentDay {
         try {
             Map<String, List<Sale>> dadosAntigos = new HashMap<>(vendasDoDia);
             vendasDoDia.clear();
-
-            // evitar deadlocks em threads a espera no dia anterior
-            for (Condition c : esperaPorProduto.values()) {
-                c.signalAll();
-            }
+            for (Condition c : esperaPorProduto.values()) c.signalAll();
             esperaPorProduto.clear();
             return dadosAntigos;
         } finally {
