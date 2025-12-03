@@ -1,27 +1,27 @@
 package common;
 
 public class OpCodes {
-    // Autenticação
+    // Autenticação (Amaro)
     public static final int AUTH_REGISTER = 0;
     public static final int AUTH_LOGIN = 1;
 
-    // Escrita (Dia Corrente)
-    public static final int ADD_EVENT = 2;     // Adicionar venda
-    public static final int NEW_DAY = 3;       // Avançar dia (Passagem de tempo)
+    // Escrita (Maciel)
+    public static final int ADD_EVENT = 2;
+    public static final int NEW_DAY = 3;
 
-    // Consultas (Agregações)
-    public static final int AGG_COUNT = 4;     // Quantidade total
-    public static final int AGG_VOLUME = 5;    // Volume de faturação
-    public static final int AGG_AVG = 6;       // Preço médio
-    public static final int AGG_MAX = 7;       // Preço máximo
+    // Consultas (Maciel + Amaro)
+    public static final int AGG_COUNT = 4;
+    public static final int AGG_VOLUME = 5;
+    public static final int AGG_AVG = 6;
+    public static final int AGG_MAX = 7;
 
-    // Lista (Payload complexo)
-    public static final int GET_EVENTS = 8;    // Filtrar eventos (Compact Serialization)
+    // Lista Compacta (Amaro)
+    public static final int GET_EVENTS = 8;
 
-    // Notificações (Blocking)
-    public static final int NOTIFY_SIMUL = 9;  // Vendas simultâneas
-    public static final int NOTIFY_CONSEC = 10;// Vendas consecutivas
+    // Notificações (Maciel + Amaro)
+    public static final int NOTIFY_SIMUL = 9;
+    public static final int NOTIFY_CONSEC = 10;
 
     // Erros
-    public static final int ERROR = 99;        // Caso algo corra mal
+    public static final int ERROR = 99;
 }

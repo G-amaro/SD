@@ -24,9 +24,10 @@ public class CurrentDay {
             vendasDoDia.get(produto).add(new Sale(produto, qtd, preco));
 
             if (esperaPorProduto.containsKey(produto)) {
+                System.out.println("   [CurrentDay] Notificando threads à espera de: " + produto);
                 esperaPorProduto.get(produto).signalAll();
             }
-            System.out.println("Venda registada: " + produto);
+            // System.out.println("   [CurrentDay] Venda guardada na RAM.");
         } finally {
             lock.unlock();
         }
