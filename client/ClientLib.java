@@ -4,7 +4,7 @@ import common.OpCodes; // Import correto
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class ClientLib implements AutoCloseable {
     private Demultiplexer conn;
@@ -76,33 +76,60 @@ public class ClientLib implements AutoCloseable {
         return conn.sendRequest(opCode, out.toByteArray());
     }
 
+
     public List<String> getEventos(Set<String> produtos, int dia) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(out);
+
+        // Envio do pedido (Igual ao que tinhas)
         dos.writeInt(dia);
         dos.writeInt(produtos.size());
         for (String produto : produtos) {
             dos.writeUTF(produto);
         }
+
         byte[] response = conn.sendRequest(OpCodes.GET_EVENTS, out.toByteArray());
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(response));
-        List<String> eventos = new ArrayList<>();
+
+        // 1. Ler o dicionário (Descompressão)
         int numNomes = dis.readInt();
         String[] dicionario = new String[numNomes];
         for (int i = 0; i < numNomes; i++) {
             dicionario[i] = dis.readUTF();
         }
+
+        // 2. Mapas para agregar os valores (Nome -> Valor)
+        Map<String, Integer> qtdTotal = new HashMap<>();
+        Map<String, Double> volTotal = new HashMap<>();
+
+        // 3. Ler a lista de eventos e somar (Em vez de adicionar logo à lista final)
         int numEventos = dis.readInt();
         for (int i = 0; i < numEventos; i++) {
             int nomeIndex = dis.readInt();
             int qtd = dis.readInt();
             double preco = dis.readDouble();
-            String nomeProduto = dicionario[nomeIndex];
-            eventos.add(String.format("Venda: %s | Qtd: %d | Preco: %.2f", nomeProduto, qtd, preco));
-        }
-        return eventos;
-    }
 
+            String nomeProduto = dicionario[nomeIndex];
+
+            // Acumula quantidade
+            qtdTotal.put(nomeProduto, qtdTotal.getOrDefault(nomeProduto, 0) + qtd);
+            // Acumula volume (qtd * preco) para depois calcularmos a média correta
+            volTotal.put(nomeProduto, volTotal.getOrDefault(nomeProduto, 0.0) + (qtd * preco));
+        }
+
+        // 4. Gerar a lista final formatada (uma linha por produto)
+        List<String> eventosFormatados = new ArrayList<>();
+
+        for (String prod : qtdTotal.keySet()) {
+            int q = qtdTotal.get(prod);
+            double v = volTotal.get(prod);
+            double precoMedio = (q > 0) ? (v / q) : 0.0;
+
+            eventosFormatados.add(String.format("Produto: %s | Qtd Total: %d | Preço Médio: %.2f", prod, q, precoMedio));
+        }
+
+        return eventosFormatados;
+    }
     public String subscreverVendasSimultaneas(String produto1, String produto2) throws IOException {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         DataOutputStream dos = new DataOutputStream(out);

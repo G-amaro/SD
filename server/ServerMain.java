@@ -12,6 +12,14 @@ public class ServerMain {
         IEngine engine = new TimeSeriesEngine();
         UserManager userManager = new UserManager();
 
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            try {
+                ((TimeSeriesEngine) engine).encerrar();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }));
+
         System.out.println("SERVIDOR INICIADO NA PORTA " + port + " <<<");
         System.out.println("A aguardar clientes...");
 

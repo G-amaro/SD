@@ -21,6 +21,31 @@ public class HistoryManager {
         new File(PASTA_DADOS).mkdir(); // Cria a pasta se não existir
     }
 
+    // Em server/HistoryManager.java
+    // Cola isto dentro da classe HistoryManager, antes do último fecha-chaveta '}'
+    public int getUltimoDiaGuardado() {
+        File pasta = new File(PASTA_DADOS);
+        if (!pasta.exists()) return 0;
+
+        File[] ficheiros = pasta.listFiles();
+        if (ficheiros == null) return 0;
+
+        int maxDia = 0;
+        for (File f : ficheiros) {
+            String nome = f.getName();
+            // Procura ficheiros com o formato "dia_NUMBER.dat"
+            if (nome.startsWith("dia_") && nome.endsWith(".dat")) {
+                try {
+                    String numeroStr = nome.substring(4, nome.length() - 4);
+                    int d = Integer.parseInt(numeroStr);
+                    if (d > maxDia) maxDia = d;
+                } catch (NumberFormatException e) {
+                    // Ignora ficheiros que não tenham numero válido
+                }
+            }
+        }
+        return maxDia;
+    }
     // Guarda um dia no disco (Persistência)
     public void gravarDia(int dia, Map<String, List<Sale>> dados) {
         lock.lock();

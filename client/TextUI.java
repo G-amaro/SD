@@ -60,14 +60,21 @@ public class TextUI
                         case "eventos":
                             int dia = Integer.parseInt(tokens[1]);
                             Set<String> prods = new HashSet<>();
-                            // CORREÇÃO AQUI: Removemos o "- 1" para ler até ao fim
+
+                            // CORREÇÃO: O loop deve ir até 'i < tokens.length' (sem o -1)
+                            // Começa em 2 para saltar a palavra "eventos" e o "dia"
                             for (int i = 2; i < tokens.length; i++) {
                                 prods.add(tokens[i]);
                             }
 
-                            List<String> eventos = lib.getEventos(prods, dia);
-                            System.out.println("--- Eventos recebidos ---");
-                            eventos.forEach(System.out::println);
+                            // Se não houver produtos, avisa o utilizador em vez de enviar pedido vazio
+                            if (prods.isEmpty()) {
+                                System.out.println("Erro: Tens de indicar pelo menos um produto. Ex: eventos 1 Banana");
+                            } else {
+                                List<String> eventos = lib.getEventos(prods, dia);
+                                System.out.println("--- Eventos recebidos ---");
+                                eventos.forEach(System.out::println);
+                            }
                             break;
 
                         case "sub-simul":
