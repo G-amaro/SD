@@ -1,0 +1,12 @@
+user1:pass
+user2:pass
+user0:pass
+waiter1:pass
+waiter0:pass
+user9:pass
+user7:pass
+user8:pass
+user5:pass
+user6:pass
+user3:pass
+user4:pass
