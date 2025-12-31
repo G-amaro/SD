@@ -5,11 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c52cfb5f-1b92-4182-8189-cc23b15aea36" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/client/DataSeeder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/client/ScenarioTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/client/TesteNotificacao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/ClientLib.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/ClientLib.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/IEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/IEngine.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/client/ClientLib.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/ClientLib.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer$Entry.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer$Entry.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/LoadTester.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/LoadTester.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/client/TextUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/TextUI.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/common/IEngine.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/IEngine.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/common/OpCodes.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/OpCodes.class" afterDir="false" />
@@ -17,10 +23,19 @@
       <change beforePath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection$Frame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection$Frame.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/server/CurrentDay.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/CurrentDay.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/server/DaySeries.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/DaySeries.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/server/HistoryManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/HistoryManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/server/ServerMain.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/ServerMain.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/server/Session.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/Session.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/server/TimeSeriesEngine.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/TimeSeriesEngine.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/server/UserManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/UserManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/CurrentDay.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/CurrentDay.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/HistoryManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/HistoryManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/ServerMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/Session.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/Session.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/TimeSeriesEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/TimeSeriesEngine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/UserManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/UserManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/users.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -37,6 +52,13 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
+  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
+  <component name="KubernetesApiProvider"><![CDATA[{
+  "isMigrated": true
+}]]></component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
 }</component>
@@ -47,9 +69,12 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
+    "Application.DataSeeder.executor": "Run",
     "Application.LoadTester.executor": "Run",
     "Application.MockServer.executor": "Run",
+    "Application.ScenarioTest.executor": "Run",
     "Application.ServerMain.executor": "Run",
+    "Application.TesteNotificacao.executor": "Run",
     "Application.TextUI.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
@@ -74,7 +99,20 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.LoadTester">
+  <component name="RunManager">
+    <configuration name="DataSeeder" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="client.DataSeeder" />
+      <module name="SD" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="LoadTester" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="client.LoadTester" />
       <module name="SD" />
@@ -88,12 +126,12 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="MockServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="test.MockServer" />
+    <configuration name="ScenarioTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="client.ScenarioTest" />
       <module name="SD" />
       <extension name="coverage">
         <pattern>
-          <option name="PATTERN" value="test.*" />
+          <option name="PATTERN" value="client.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
@@ -114,8 +152,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="TextUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="client.TextUI" />
+    <configuration name="TesteNotificacao" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="client.TesteNotificacao" />
       <module name="SD" />
       <extension name="coverage">
         <pattern>
@@ -129,10 +167,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.LoadTester" />
+        <item itemvalue="Application.DataSeeder" />
         <item itemvalue="Application.ServerMain" />
-        <item itemvalue="Application.TextUI" />
-        <item itemvalue="Application.MockServer" />
+        <item itemvalue="Application.ScenarioTest" />
+        <item itemvalue="Application.LoadTester" />
+        <item itemvalue="Application.TesteNotificacao" />
       </list>
     </recent_temporary>
   </component>
@@ -171,5 +210,16 @@
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
 </project>

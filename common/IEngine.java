@@ -1,16 +1,21 @@
 package common;
 
 import java.util.List;
+import java.util.Set;
 
 public interface IEngine {
-    // Métodos de Escrita
     void registarVenda(String produto, int qtd, double preco);
 
-    // Métodos de Leitura (Exemplos)
+    int getQuantidade(String produto, int dias);
+    double getVolume(String produto, int dias);
+    double getMedia(String produto, int dias);
+    double getMax(String produto, int dias);
+
+    List<Sale> getVendas(Set<String> produtos, int dia);
+
+    boolean esperarVendasSimultaneas(String p1, String p2);
+    String esperarVendasConsecutivas(String produto, int qtd);
+
     double consultarSoma(String produto, int dia);
-    boolean esperarPeloMenos(String produto, int qtdDesejada);
-
     List<Sale> getVendas(String produto);
-
-    // Adicionar restantes métodos conforme necessário
 }

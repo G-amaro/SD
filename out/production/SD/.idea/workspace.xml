@@ -6,6 +6,21 @@
   <component name="ChangeListManager">
     <list default="true" id="c52cfb5f-1b92-4182-8189-cc23b15aea36" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/ClientLib.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/ClientLib.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer$Entry.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer$Entry.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/TextUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/TextUI.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/common/IEngine.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/IEngine.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/common/OpCodes.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/OpCodes.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/common/Sale.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/Sale.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection$Frame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection$Frame.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/server/CurrentDay.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/CurrentDay.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/server/ServerMain.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/ServerMain.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/server/Session.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/Session.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/server/TimeSeriesEngine.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/TimeSeriesEngine.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/server/UserManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/UserManager.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -32,6 +47,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;Application.LoadTester.executor&quot;: &quot;Run&quot;,
     &quot;Application.MockServer.executor&quot;: &quot;Run&quot;,
     &quot;Application.ServerMain.executor&quot;: &quot;Run&quot;,
     &quot;Application.TextUI.executor&quot;: &quot;Run&quot;,
@@ -40,7 +56,7 @@
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/home/gongas/Desktop/SD: Aulas&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/gongas/Desktop/SD&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -58,7 +74,20 @@
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="Application.ServerMain">
+  <component name="RunManager">
+    <configuration name="LoadTester" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="client.LoadTester" />
+      <module name="SD" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="client.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="MockServer" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
       <option name="MAIN_CLASS_NAME" value="test.MockServer" />
       <module name="SD" />
@@ -100,6 +129,7 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Application.LoadTester" />
         <item itemvalue="Application.ServerMain" />
         <item itemvalue="Application.TextUI" />
         <item itemvalue="Application.MockServer" />
@@ -135,6 +165,7 @@
       <workItem from="1764722841600" duration="1629000" />
       <workItem from="1765898128551" duration="62000" />
       <workItem from="1765970943284" duration="53000" />
+      <workItem from="1767119377301" duration="1064000" />
     </task>
     <servers />
   </component>

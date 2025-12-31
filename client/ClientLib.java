@@ -146,8 +146,16 @@ public class ClientLib implements AutoCloseable {
         dos.writeUTF(produto);
         dos.writeInt(qtdNecessaria);
         byte[] response = conn.sendRequest(OpCodes.NOTIFY_CONSEC, out.toByteArray());
-        boolean success = new DataInputStream(new ByteArrayInputStream(response)).readBoolean();
-        return success ? qtdNecessaria + " vendas consecutivas de " + produto + "!" : "O dia acabou sem a sequencia.";
+
+        DataInputStream dis = new DataInputStream(new ByteArrayInputStream(response));
+        boolean success = dis.readBoolean();
+
+        if (success) {
+            String prodName = dis.readUTF();
+            return qtdNecessaria + " vendas consecutivas de " + prodName + "!";
+        } else {
+            return "O dia acabou sem a sequencia.";
+        }
     }
 
     @Override

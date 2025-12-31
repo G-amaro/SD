@@ -2,172 +2,191 @@ package server;
 
 import common.IEngine;
 import common.Sale;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class TimeSeriesEngine implements IEngine {
 
     private final CurrentDay currentDay;
     private final HistoryManager history;
-    private int diaAtual; // Já não inicializamos a 1 aqui
+    private int diaAtual;
 
-    public TimeSeriesEngine() {
+    private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
+    private final Lock readLock = rwLock.readLock();
+    private final Lock writeLock = rwLock.writeLock();
+
+    // Construtor principal com D e S
+    public TimeSeriesEngine(int janelaD, int maxS) {
         this.currentDay = new CurrentDay();
-        this.history = new HistoryManager();
-        this.diaAtual = carregarEstadoDia(); // <--- MUDANÇA: Recuperar o dia correto
+        this.history = new HistoryManager(maxS); // Passamos o S para o gestor
+        this.diaAtual = carregarEstadoDia();
     }
 
-    // --- NOVA FUNÇÃO AUXILIAR ---
-    // Vai à pasta e descobre qual o último dia gravado para continuarmos daí
-    private int carregarEstadoDia() {
-        File pasta = new File("dados_servidor");
-        if (!pasta.exists()) {
-            return 1; // Se não há pasta, é o primeiro dia
-        }
+    public TimeSeriesEngine() {
+        this(0, 3);
+    }
 
-        int maxDia = 0;
-        File[] ficheiros = pasta.listFiles();
-        if (ficheiros != null) {
-            for (File f : ficheiros) {
-                String nome = f.getName();
-                // Procura ficheiros do tipo "dia_X.dat"
-                if (nome.startsWith("dia_") && nome.endsWith(".dat")) {
-                    try {
-                        // Extrai o número entre "dia_" e ".dat"
-                        String numeroStr = nome.substring(4, nome.length() - 4);
-                        int dia = Integer.parseInt(numeroStr);
-                        if (dia > maxDia) {
-                            maxDia = dia;
+    private int carregarEstadoDia() {
+        return history.getUltimoDiaGuardado() + 1;
+    }
+
+    @Override
+    public void registarVenda(String produto, int qtd, double preco) {
+        readLock.lock();
+        try {
+            currentDay.adicionarVenda(produto, qtd, preco);
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    public void avancarDia() {
+        writeLock.lock();
+        try {
+            System.out.println(">>> A fechar dia " + diaAtual + "...");
+            Map<String, List<Sale>> dados = currentDay.fecharDiaEObterDados();
+
+            if (!dados.isEmpty()) {
+                history.gravarDia(diaAtual, dados);
+            } else {
+                System.out.println(">>> Dia " + diaAtual + " vazio. Não foi criado ficheiro.");
+            }
+
+            diaAtual++;
+            System.out.println(">>> Novo dia iniciado: " + diaAtual);
+        } finally {
+            writeLock.unlock();
+        }
+    }
+
+    @Override
+    public int getQuantidade(String produto, int dias) {
+        readLock.lock();
+        try {
+            int total = 0;
+            int inicio = Math.max(1, diaAtual - dias);
+
+            for (int d = inicio; d < diaAtual; d++) {
+                // Aqui o history decide se vai à RAM ou carrega temporariamente do disco
+                DaySeries ds = history.obterDia(d);
+                if (ds != null) total += ds.getQuantidade(produto);
+            }
+            return total;
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public double getVolume(String produto, int dias) {
+        readLock.lock();
+        try {
+            double total = 0.0;
+            int inicio = Math.max(1, diaAtual - dias);
+
+            for (int d = inicio; d < diaAtual; d++) {
+                DaySeries ds = history.obterDia(d);
+                if (ds != null) total += ds.getVolume(produto);
+            }
+            return total;
+        } finally {
+            readLock.unlock();
+        }
+    }
+
+    @Override
+    public double getMedia(String produto, int dias) {
+        readLock.lock();
+        try {
+            double totalFaturado = 0.0;
+            int totalUnidades = 0;
+            int inicio = Math.max(1, diaAtual - dias);
+
+            for (int d = inicio; d < diaAtual; d++) {
+                DaySeries ds = history.obterDia(d);
+                if (ds != null) {
+                    List<Sale> vendas = ds.getVendas(produto);
+                    if (vendas != null) {
+                        for (Sale s : vendas) {
+                            totalFaturado += s.preco * s.quantidade;
+                            totalUnidades += s.quantidade;
                         }
-                    } catch (NumberFormatException e) {
-                        // Ignora ficheiros com nomes estranhos
                     }
                 }
             }
+            return (totalUnidades == 0) ? 0.0 : totalFaturado / totalUnidades;
+        } finally {
+            readLock.unlock();
         }
-        System.out.println(">>> Estado recuperado: Último dia gravado foi " + maxDia + ". A iniciar no dia " + (maxDia + 1));
-        return maxDia + 1; // O dia atual é o próximo
     }
 
-    // --- ESCRITA ---
     @Override
-    public void registarVenda(String produto, int qtd, double preco) {
-        currentDay.adicionarVenda(produto, qtd, preco);
-    }
+    public double getMax(String produto, int dias) {
+        readLock.lock();
+        try {
+            double maxGlobal = 0.0;
+            int inicio = Math.max(1, diaAtual - dias);
 
-    // --- MUDANÇA DE DIA (Agora funciona corretamente incrementalmente) ---
-    public synchronized void avancarDia() {
-        System.out.println(">>> A fechar dia " + diaAtual + "...");
-
-        // 1. Obtém os dados da RAM (CurrentDay) e limpa para o novo dia
-        Map<String, List<Sale>> dados = currentDay.fecharDiaEObterDados();
-
-        // 2. Grava este bloco no disco (persistência incremental)
-        if (!dados.isEmpty()) {
-            history.gravarDia(diaAtual, dados);
-        } else {
-            System.out.println(">>> Dia " + diaAtual + " vazio. Não foi criado ficheiro.");
-        }
-
-        // 3. Avança o contador para o próximo
-        diaAtual++;
-        System.out.println(">>> Novo dia iniciado: " + diaAtual);
-    }
-
-    // --- QUERY / LEITURA (Mantém-se igual) ---
-
-    // ... (restante código dos getters getQuantidade, getVolume, etc. mantém-se igual)
-
-// Em server/TimeSeriesEngine.java
-
-    public int getQuantidade(String produto, int diasParaTras) {
-        int total = 0;
-        // O enunciado diz "últimos d dias anteriores".
-        // Vamos assumir que inclui o dia atual se a lógica for "janela temporal".
-        // Ou, se for estrito ao PDF ("dias anteriores"), começa em diaAtual - 1.
-        // Vou fazer uma janela que recua 'diasParaTras' dias a partir de agora.
-
-        int diaInicio = Math.max(1, diaAtual - diasParaTras + 1);
-
-        for (int d = diaInicio; d <= diaAtual; d++) {
-            if (d == diaAtual) {
-                total += currentDay.consultarQuantidade(produto);
-            } else {
+            for (int d = inicio; d < diaAtual; d++) {
                 DaySeries ds = history.obterDia(d);
-                if (ds != null) {
-                    total += ds.getQuantidade(produto);
-                }
+                double maxDia = (ds != null) ? ds.getMax(produto) : 0.0;
+                if (maxDia > maxGlobal) maxGlobal = maxDia;
             }
+            return maxGlobal;
+        } finally {
+            readLock.unlock();
         }
-        return total;
-    }
-    public double getVolume(String produto, int dia) {
-        if (dia == diaAtual) return currentDay.consultarVolume(produto);
-        if (dia < diaAtual) {
-            DaySeries ds = history.obterDia(dia);
-            return (ds != null) ? ds.getVolume(produto) : 0.0;
-        }
-        return 0.0;
     }
 
-    public double getMedia(String produto, int dia) {
-        if (dia == diaAtual) return currentDay.consultarMedia(produto);
-        if (dia < diaAtual) {
-            DaySeries ds = history.obterDia(dia);
-            return (ds != null) ? ds.getMedia(produto) : 0.0;
-        }
-        return 0.0;
-    }
+    @Override
+    public List<Sale> getVendas(Set<String> produtos, int diaPedido) {
+        readLock.lock();
+        try {
+            List<Sale> resultado = new ArrayList<>();
 
-    public double getMax(String produto, int dia) {
-        if (dia == diaAtual) return currentDay.consultarMaximo(produto);
-        if (dia < diaAtual) {
-            DaySeries ds = history.obterDia(dia);
-            return (ds != null) ? ds.getMax(produto) : 0.0;
-        }
-        return 0.0;
-    }
-
-    // Em server/TimeSeriesEngine.java
-
-    public List<Sale> getVendas(Set<String> produtos, int diaLimite) {
-        List<Sale> resultado = new ArrayList<>();
-
-        // PERCORRER DESDE O DIA 1 ATÉ AO DIA PEDIDO (inclusive)
-        for (int d = 1; d <= diaLimite; d++) {
-
-            // Se for o dia atual, vamos à RAM (CurrentDay)
-            if (d == diaAtual) {
+            if (diaPedido == diaAtual) {
                 resultado.addAll(currentDay.getVendas(produtos));
-            }
-            // Se for dia passado, vamos ao Histórico (Disco/Cache)
-            else if (d < diaAtual) {
-                DaySeries ds = history.obterDia(d);
+            } else if (diaPedido < diaAtual && diaPedido >= 1) {
+                DaySeries ds = history.obterDia(diaPedido);
                 if (ds != null) {
                     for (String p : produtos) {
                         resultado.addAll(ds.getVendas(p));
                     }
                 }
             }
+            return resultado;
+        } finally {
+            readLock.unlock();
         }
-        return resultado;
     }
-    // --- MÉTODOS DE COMPATIBILIDADE ---
+
+    @Override
+    public boolean esperarVendasSimultaneas(String p1, String p2) {
+        try {
+            return currentDay.esperarVendasSimultaneas(p1, p2);
+        } catch (InterruptedException e) {
+            return false;
+        }
+    }
+
+    @Override
+    public String esperarVendasConsecutivas(String produto, int qtd) {
+        try {
+            return currentDay.esperarVendasConsecutivas(produto, qtd);
+        } catch (InterruptedException e) {
+            return null;
+        }
+    }
+
     @Override public double consultarSoma(String p, int d) { return getVolume(p, d); }
-    @Override public boolean esperarPeloMenos(String p, int q) { return esperarVenda(p); }
-    public boolean esperarVenda(String p) {
-        try { return currentDay.esperarPorVenda(p); }
-        catch (InterruptedException e) { return false; }
-    }
     @Override public List<Sale> getVendas(String p) { return null; }
 
-    // Podes manter o método encerrar() auxiliar se quiseres usar o ShutdownHook,
-    // mas agora o core do sistema já respeita a gravação "aos poucos" através do novodia.
-    public synchronized void encerrar() {
-        Map<String, List<Sale>> dados = currentDay.fecharDiaEObterDados();
-        if (!dados.isEmpty()) history.gravarDia(diaAtual, dados);
+    public void encerrar() {
+        avancarDia();
     }
 }
