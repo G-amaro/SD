@@ -16,6 +16,4 @@ public interface IEngine {
     boolean esperarVendasSimultaneas(String p1, String p2);
     String esperarVendasConsecutivas(String produto, int qtd);
 
-    double consultarSoma(String produto, int dia);
-    List<Sale> getVendas(String produto);
 }

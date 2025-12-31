@@ -22,6 +22,4 @@ public class OpCodes {
     public static final int NOTIFY_SIMUL = 9;
     public static final int NOTIFY_CONSEC = 10;
 
-    // Erros
-    public static final int ERROR = 99;
 }

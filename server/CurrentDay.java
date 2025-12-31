@@ -88,63 +88,6 @@ public class CurrentDay {
         }
     }
 
-    // --- Métodos de Leitura (Mantidos) ---
-
-    public List<Sale> getVendas(Set<String> produtos) {
-        lock.lock();
-        try {
-            List<Sale> resultado = new ArrayList<>();
-            for (String p : produtos) {
-                if (vendasDoDia.containsKey(p)) {
-                    resultado.addAll(vendasDoDia.get(p));
-                }
-            }
-            return resultado;
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public int consultarQuantidade(String produto) {
-        lock.lock();
-        try {
-            if (!vendasDoDia.containsKey(produto)) return 0;
-            return vendasDoDia.get(produto).stream().mapToInt(s -> s.quantidade).sum();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public double consultarVolume(String produto) {
-        lock.lock();
-        try {
-            if (!vendasDoDia.containsKey(produto)) return 0.0;
-            return vendasDoDia.get(produto).stream().mapToDouble(s -> s.quantidade * s.preco).sum();
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public double consultarMedia(String produto) {
-        lock.lock();
-        try {
-            if (!vendasDoDia.containsKey(produto)) return 0.0;
-            return vendasDoDia.get(produto).stream().mapToDouble(s -> s.preco).average().orElse(0.0);
-        } finally {
-            lock.unlock();
-        }
-    }
-
-    public double consultarMaximo(String produto) {
-        lock.lock();
-        try {
-            if (!vendasDoDia.containsKey(produto)) return 0.0;
-            return vendasDoDia.get(produto).stream().mapToDouble(s -> s.preco).max().orElse(0.0);
-        } finally {
-            lock.unlock();
-        }
-    }
-
     public Map<String, List<Sale>> fecharDiaEObterDados() {
         lock.lock();
         try {

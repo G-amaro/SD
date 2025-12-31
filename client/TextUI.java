@@ -59,6 +59,11 @@ public class TextUI
 
                         case "eventos":
                             int dia = Integer.parseInt(tokens[1]);
+                            if (dia < 1) {
+                                System.out.println("Erro: O dia tem de ser maior que 0.");
+                                break;
+                            }
+
                             Set<String> prods = new HashSet<>();
 
                             // CORREÇÃO: O loop deve ir até 'i < tokens.length' (sem o -1)

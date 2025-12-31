@@ -22,9 +22,6 @@ public class HistoryManager {
         new File(PASTA_DADOS).mkdir();
     }
 
-    public HistoryManager() {
-        this(3);
-    }
 
     public int getUltimoDiaGuardado() {
         File pasta = new File(PASTA_DADOS);

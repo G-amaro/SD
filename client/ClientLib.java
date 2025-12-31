@@ -2,8 +2,6 @@ package client;
 
 import common.OpCodes; // Import correto
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.*;
 
 public class ClientLib implements AutoCloseable {

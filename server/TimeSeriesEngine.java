@@ -27,10 +27,6 @@ public class TimeSeriesEngine implements IEngine {
         this.diaAtual = carregarEstadoDia();
     }
 
-    public TimeSeriesEngine() {
-        this(0, 3);
-    }
-
     private int carregarEstadoDia() {
         return history.getUltimoDiaGuardado() + 1;
     }
@@ -149,9 +145,10 @@ public class TimeSeriesEngine implements IEngine {
         try {
             List<Sale> resultado = new ArrayList<>();
 
-            if (diaPedido == diaAtual) {
-                resultado.addAll(currentDay.getVendas(produtos));
-            } else if (diaPedido < diaAtual && diaPedido >= 1) {
+            // Correção: Removemos o acesso ao 'currentDay'.
+            // Agora só entra no if se o dia pedido for ESTRITAMENTE menor que o atual
+            // e maior ou igual a 1.
+            if (diaPedido < diaAtual && diaPedido >= 1) {
                 DaySeries ds = history.obterDia(diaPedido);
                 if (ds != null) {
                     for (String p : produtos) {
@@ -159,6 +156,9 @@ public class TimeSeriesEngine implements IEngine {
                     }
                 }
             }
+
+            // Se pedires dia 0 -> Não entra no if (>=1 falha) -> Retorna vazio.
+            // Se pedires dia 1 (sendo hoje dia 1) -> Não entra no if (< diaAtual falha) -> Retorna vazio.
             return resultado;
         } finally {
             readLock.unlock();
@@ -182,9 +182,6 @@ public class TimeSeriesEngine implements IEngine {
             return null;
         }
     }
-
-    @Override public double consultarSoma(String p, int d) { return getVolume(p, d); }
-    @Override public List<Sale> getVendas(String p) { return null; }
 
     public void encerrar() {
         avancarDia();
