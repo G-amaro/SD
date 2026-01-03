@@ -16,36 +16,44 @@ public class TimeSeriesEngine implements IEngine {
     private final HistoryManager history;
     private int diaAtual;
 
-    private final ReadWriteLock rwLock = new ReentrantReadWriteLock();
-    private final Lock readLock = rwLock.readLock();
-    private final Lock writeLock = rwLock.writeLock();
+    private final int janelaD;
 
-    // Construtor principal com D e S
-    public TimeSeriesEngine(int janelaD, int maxS) {
+    private final ReadWriteLock rwLock= new ReentrantReadWriteLock();
+    private final Lock readLock= rwLock.readLock();
+    private final Lock writeLock= rwLock.writeLock();
+
+    // Construtor principal
+    public TimeSeriesEngine(int janelaD,int maxS) {
+
+        this.janelaD = janelaD;
         this.currentDay = new CurrentDay();
-        this.history = new HistoryManager(maxS); // Passamos o S para o gestor
+        this.history = new HistoryManager(maxS);
         this.diaAtual = carregarEstadoDia();
     }
 
-    private int carregarEstadoDia() {
+    private int carregarEstadoDia(){
+
         return history.getUltimoDiaGuardado() + 1;
     }
 
     @Override
     public void registarVenda(String produto, int qtd, double preco) {
+
         readLock.lock();
         try {
+
             currentDay.adicionarVenda(produto, qtd, preco);
         } finally {
             readLock.unlock();
         }
     }
 
-    public void avancarDia() {
+    public void avancarDia(){
+
         writeLock.lock();
         try {
             System.out.println(">>> A fechar dia " + diaAtual + "...");
-            Map<String, List<Sale>> dados = currentDay.fecharDiaEObterDados();
+            Map<String, List<Sale>> dados= currentDay.fecharDiaEObterDados();
 
             if (!dados.isEmpty()) {
                 history.gravarDia(diaAtual, dados);
@@ -55,24 +63,31 @@ public class TimeSeriesEngine implements IEngine {
 
             diaAtual++;
             System.out.println(">>> Novo dia iniciado: " + diaAtual);
+
         } finally {
             writeLock.unlock();
         }
     }
 
+
     @Override
-    public int getQuantidade(String produto, int dias) {
+    public int getQuantidade(String produto,int dias) {
+
         readLock.lock();
         try {
             int total = 0;
-            int inicio = Math.max(1, diaAtual - dias);
+            // Se janelaD > 0, usa o menor entre o pedido e o limite. Se for 0, aceita tudo.
+            int limiteEfetivo = (janelaD > 0) ? Math.min(dias, janelaD):dias;
+            int inicio = Math.max(1, diaAtual -limiteEfetivo);
 
-            for (int d = inicio; d < diaAtual; d++) {
-                // Aqui o history decide se vai à RAM ou carrega temporariamente do disco
-                DaySeries ds = history.obterDia(d);
+            for (int d =inicio; d <diaAtual;d++) {
+                DaySeries ds= history.obterDia(d);
+
                 if (ds != null) total += ds.getQuantidade(produto);
             }
+
             return total;
+
         } finally {
             readLock.unlock();
         }
@@ -80,16 +95,20 @@ public class TimeSeriesEngine implements IEngine {
 
     @Override
     public double getVolume(String produto, int dias) {
+
         readLock.lock();
+
         try {
             double total = 0.0;
-            int inicio = Math.max(1, diaAtual - dias);
+            int limiteEfetivo= (janelaD > 0) ? Math.min(dias, janelaD) : dias;
+            int inicio= Math.max(1, diaAtual - limiteEfetivo);
 
-            for (int d = inicio; d < diaAtual; d++) {
-                DaySeries ds = history.obterDia(d);
+            for (int d=inicio; d <diaAtual;d++) {
+                DaySeries ds= history.obterDia(d);
                 if (ds != null) total += ds.getVolume(produto);
             }
             return total;
+
         } finally {
             readLock.unlock();
         }
@@ -97,43 +116,55 @@ public class TimeSeriesEngine implements IEngine {
 
     @Override
     public double getMedia(String produto, int dias) {
+
         readLock.lock();
+
         try {
             double totalFaturado = 0.0;
             int totalUnidades = 0;
-            int inicio = Math.max(1, diaAtual - dias);
 
-            for (int d = inicio; d < diaAtual; d++) {
+            int limiteEfetivo =(janelaD > 0) ? Math.min(dias, janelaD) : dias;
+            int inicio =Math.max(1, diaAtual - limiteEfetivo);
+
+            for (int d=inicio;d< diaAtual;d++) {
+
                 DaySeries ds = history.obterDia(d);
-                if (ds != null) {
-                    List<Sale> vendas = ds.getVendas(produto);
-                    if (vendas != null) {
-                        for (Sale s : vendas) {
-                            totalFaturado += s.preco * s.quantidade;
-                            totalUnidades += s.quantidade;
-                        }
-                    }
+                if (ds!=null) {
+                    totalFaturado += ds.getVolume(produto);
+                    totalUnidades += ds.getQuantidade(produto);
                 }
+
             }
-            return (totalUnidades == 0) ? 0.0 : totalFaturado / totalUnidades;
+
+            return (totalUnidades==0) ? 0.0 :totalFaturado / totalUnidades;
+
         } finally {
+
             readLock.unlock();
         }
     }
 
     @Override
-    public double getMax(String produto, int dias) {
-        readLock.lock();
-        try {
-            double maxGlobal = 0.0;
-            int inicio = Math.max(1, diaAtual - dias);
+    public double getMax(String produto,int dias) {
 
-            for (int d = inicio; d < diaAtual; d++) {
+        readLock.lock();
+
+        try {
+            double maxGlobal =0.0;
+            int limiteEfetivo= (janelaD > 0) ? Math.min(dias, janelaD) : dias;
+            int inicio =Math.max(1, diaAtual - limiteEfetivo);
+
+            for (int d=inicio; d <diaAtual; d++)  {
                 DaySeries ds = history.obterDia(d);
-                double maxDia = (ds != null) ? ds.getMax(produto) : 0.0;
-                if (maxDia > maxGlobal) maxGlobal = maxDia;
+
+                if (ds !=null) {
+                    double maxDia = ds.getMax(produto);
+                    if (maxDia > maxGlobal) maxGlobal = maxDia;
+                }
             }
+
             return maxGlobal;
+
         } finally {
             readLock.unlock();
         }
@@ -141,32 +172,33 @@ public class TimeSeriesEngine implements IEngine {
 
     @Override
     public List<Sale> getVendas(Set<String> produtos, int diaPedido) {
+
         readLock.lock();
         try {
             List<Sale> resultado = new ArrayList<>();
 
-            // Correção: Removemos o acesso ao 'currentDay'.
-            // Agora só entra no if se o dia pedido for ESTRITAMENTE menor que o atual
-            // e maior ou igual a 1.
             if (diaPedido < diaAtual && diaPedido >= 1) {
+
                 DaySeries ds = history.obterDia(diaPedido);
+
                 if (ds != null) {
+
                     for (String p : produtos) {
                         resultado.addAll(ds.getVendas(p));
                     }
                 }
             }
 
-            // Se pedires dia 0 -> Não entra no if (>=1 falha) -> Retorna vazio.
-            // Se pedires dia 1 (sendo hoje dia 1) -> Não entra no if (< diaAtual falha) -> Retorna vazio.
             return resultado;
+
         } finally {
             readLock.unlock();
         }
     }
 
     @Override
-    public boolean esperarVendasSimultaneas(String p1, String p2) {
+    public boolean esperarVendasSimultaneas(String p1,String p2) {
+
         try {
             return currentDay.esperarVendasSimultaneas(p1, p2);
         } catch (InterruptedException e) {
@@ -176,6 +208,7 @@ public class TimeSeriesEngine implements IEngine {
 
     @Override
     public String esperarVendasConsecutivas(String produto, int qtd) {
+
         try {
             return currentDay.esperarVendasConsecutivas(produto, qtd);
         } catch (InterruptedException e) {

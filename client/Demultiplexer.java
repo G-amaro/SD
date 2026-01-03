@@ -12,18 +12,21 @@ import java.util.concurrent.locks.ReentrantLock;
 
 
 public class Demultiplexer implements AutoCloseable{
+
     private final TaggedConnection conn;
-    private final Lock lock = new ReentrantLock();
+    private final Lock lock =new ReentrantLock();
     private final Map<Long, Entry> responses = new HashMap<>();
-    private long lastId = 0;
-    public Exception failure = null;
+    private long lastId= 0;
+    public Exception failure= null;
 
     private class Entry{
-        byte[] data = null;
-        final Condition cond = lock.newCondition();
+
+        byte[] data=null;
+        final Condition cond=lock.newCondition();
     }
 
-    public Demultiplexer(String host, int port) throws IOException {
+    public Demultiplexer(String host,int port)throws IOException {
+
         Socket socket = new Socket(host, port);
         this.conn = new TaggedConnection(socket);
 
@@ -31,7 +34,8 @@ public class Demultiplexer implements AutoCloseable{
         reader.start();
     }
 
-    public byte[] sendRequest(int opCode, byte[] data) throws IOException {
+    public byte[] sendRequest(int opCode,byte[] data) throws IOException {
+
         long id;
         Entry myEntry = new  Entry();
 
@@ -47,31 +51,39 @@ public class Demultiplexer implements AutoCloseable{
 
         lock.lock();
         try{
-            while (myEntry.data == null && failure == null){
+
+            while (myEntry.data==null && failure== null){
+
                 try{
                     myEntry.cond.await();
+
                 }catch (InterruptedException e){
                     throw new IOException("Interrompido");
                 }
             }
-            if (failure != null) throw new IOException("Conexão", failure);
+            if (failure!=null) throw new IOException("Conexão", failure);
 
             responses.remove(id);
+
             return myEntry.data;
+
         }finally {
             lock.unlock();
         }
     }
 
     private void readLoop(){
+
         try {
             while (true) {
-                Frame frame = conn.receive();
+                Frame frame= conn.receive();
+
                 lock.lock();
                 try {
                     Entry e = responses.get(frame.tag);
-                    if (e != null) {
-                        e.data = frame.data;
+
+                    if (e !=null) {
+                        e.data =frame.data;
                         e.cond.signal();
                     }
                 }finally {
@@ -79,9 +91,10 @@ public class Demultiplexer implements AutoCloseable{
                 }
             }
         }catch (Exception e){
+
             lock.lock();
             try {
-                failure = e;
+                failure=e;
                 responses.values().forEach(entry-> entry.cond.signalAll());
 
             }finally {

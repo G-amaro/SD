@@ -7,29 +7,45 @@
     <list default="true" id="c52cfb5f-1b92-4182-8189-cc23b15aea36" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/ClientLib.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/ClientLib.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/DataSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/PovoamentoTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/Demultiplexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/Demultiplexer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/LoadTester.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/LoadTester.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/ScenarioTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/ScenarioTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/client/TesteNotificacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/TesteNotificacao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/client/TextUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/TextUI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/IEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/IEngine.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/common/OpCodes.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/OpCodes.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/Sale.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/Sale.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/common/TaggedConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/TaggedConnection.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/ClientLib.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/ClientLib.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/DataSeeder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer$Entry.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer$Entry.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/LoadTester.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/LoadTester.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/ScenarioTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/ScenarioTest.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/client/TesteNotificacao.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/TesteNotificacao.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/client/TextUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/TextUI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/common/IEngine.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/IEngine.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_1.dat" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_1.dat" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_2.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_3.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_4.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_5.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_6.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_7.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_8.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_9.dat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/common/OpCodes.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/OpCodes.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/common/Sale.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/Sale.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection$Frame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection$Frame.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_1.dat" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/server/CurrentDay.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/CurrentDay.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/server/DaySeries.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/DaySeries.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/server/HistoryManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/HistoryManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/server/ServerMain.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/ServerMain.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/server/Session.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/Session.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/server/TimeSeriesEngine.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/TimeSeriesEngine.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/SD/server/UserManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/UserManager.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/out/production/SD/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/users.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/CurrentDay.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/CurrentDay.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/DaySeries.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/DaySeries.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/HistoryManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/HistoryManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/ServerMain.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/Session.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/Session.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/TimeSeriesEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/TimeSeriesEngine.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/UserManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/UserManager.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/users.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -47,10 +63,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="KubernetesApiPersistence"><![CDATA[{}]]></component>
-  <component name="KubernetesApiProvider"><![CDATA[{
-  "isMigrated": true
-}]]></component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="ProblemsViewState">
     <option name="selectedTabId" value="CurrentFile" />
   </component>
@@ -62,41 +78,41 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.DataSeeder.executor": "Run",
-    "Application.LoadTester.executor": "Run",
-    "Application.MockServer.executor": "Run",
-    "Application.ScenarioTest.executor": "Run",
-    "Application.ServerMain.executor": "Run",
-    "Application.TesteNotificacao.executor": "Run",
-    "Application.TextUI.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/gongas/Desktop/SD",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Modules",
-    "project.structure.proportion": "0.15",
-    "project.structure.side.proportion": "0.0",
-    "settings.editor.selected.configurable": "preferences.pluginManager",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.DataSeeder.executor&quot;: &quot;Run&quot;,
+    &quot;Application.LoadTester.executor&quot;: &quot;Run&quot;,
+    &quot;Application.MockServer.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ScenarioTest.executor&quot;: &quot;Run&quot;,
+    &quot;Application.ServerMain.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TesteNotificacao.executor&quot;: &quot;Run&quot;,
+    &quot;Application.TextUI.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/gongas/Desktop/SD&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager">
-    <configuration name="DataSeeder" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="client.DataSeeder" />
+  <component name="RunManager" selected="Application.TextUI">
+    <configuration name="LoadTester" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="client.LoadTester" />
       <module name="SD" />
       <extension name="coverage">
         <pattern>
@@ -108,8 +124,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="LoadTester" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="client.LoadTester" />
+    <configuration name="PovoamentoTest" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="client.PovoamentoTest" />
       <module name="SD" />
       <extension name="coverage">
         <pattern>
@@ -147,8 +163,8 @@
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="TesteNotificacao" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
-      <option name="MAIN_CLASS_NAME" value="client.TesteNotificacao" />
+    <configuration name="TextUI" type="Application" factoryName="Application" temporary="true" nameIsGenerated="true">
+      <option name="MAIN_CLASS_NAME" value="client.TextUI" />
       <module name="SD" />
       <extension name="coverage">
         <pattern>
@@ -162,19 +178,19 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.DataSeeder" />
+        <item itemvalue="Application.TextUI" />
         <item itemvalue="Application.ServerMain" />
+        <item itemvalue="Application.PovoamentoTest" />
         <item itemvalue="Application.ScenarioTest" />
         <item itemvalue="Application.LoadTester" />
-        <item itemvalue="Application.TesteNotificacao" />
       </list>
     </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-bf35d07a577b-intellij.indexing.shared.core-IU-252.28238.7" />
-        <option value="bundled-js-predefined-d6986cc7102b-a71380e98a7c-JavaScript-IU-252.28238.7" />
+        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.24978.46" />
+        <option value="bundled-js-predefined-d6986cc7102b-76f8388c3a79-JavaScript-IU-243.24978.46" />
       </set>
     </attachedChunks>
   </component>
@@ -200,6 +216,7 @@
       <workItem from="1765898128551" duration="62000" />
       <workItem from="1765970943284" duration="53000" />
       <workItem from="1767119377301" duration="1064000" />
+      <workItem from="1767464693878" duration="9439000" />
     </task>
     <servers />
   </component>
@@ -216,5 +233,10 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="com.intellij.coverage.CoverageDataManagerImpl">
+    <SUITE FILE_PATH="coverage/SD$TextUI.ic" NAME="TextUI Coverage Results" MODIFIED="1767477042565" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="idea" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="true">
+      <FILTER>client.*</FILTER>
+    </SUITE>
   </component>
 </project>

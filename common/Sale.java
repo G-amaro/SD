@@ -3,6 +3,7 @@ package common;
 import java.io.Serializable;
 
 public class Sale implements Serializable {
+
     public String produto;
     public int quantidade;
     public double preco;

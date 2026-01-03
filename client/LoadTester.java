@@ -6,42 +6,47 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class LoadTester {
 
     // CONFIGURAÇÕES DO TESTE
-    private static final int NUM_CLIENTES_NORMAIS = 10;   // Clientes a fazer vendas/consultas
-    private static final int OPS_POR_CLIENTE = 200;       // Quantas ops cada um faz
-    private static final int NUM_CLIENTES_ESPERA = 2;     // Clientes que testam as notificações
+    private static final int NUM_CLIENTES_NORMAIS=10;   // Clientes a fazer vendas/consultas
+    private static final int OPS_POR_CLIENTE= 200;       // Quantas ops cada um faz
+    private static final int NUM_CLIENTES_ESPERA=2;     // Clientes que testam as notificações
 
     private static final AtomicInteger sucessos = new AtomicInteger(0);
     private static final AtomicInteger falhas = new AtomicInteger(0);
 
     public static void main(String[] args) throws InterruptedException {
         System.out.println(">>> INICIANDO TESTE DE CARGA <<<");
+
         System.out.println("Clientes Normais: " + NUM_CLIENTES_NORMAIS);
         System.out.println("Ops por Cliente: " + OPS_POR_CLIENTE);
 
         Thread[] workers = new Thread[NUM_CLIENTES_NORMAIS + NUM_CLIENTES_ESPERA];
         long startTime = System.currentTimeMillis();
 
-        // 1. LANÇAR CLIENTES QUE FICAM À ESPERA (NOTIFICAÇÕES)
-        // Estes servem para provar que o servidor gere bem threads bloqueadas
-        for (int i = 0; i < NUM_CLIENTES_ESPERA; i++) {
-            final int id = i;
-            workers[i] = new Thread(() -> runWaiter(id));
+        // LANÇAR CLIENTES QUE FICAM À ESPERA (NOTIFICAÇÕES)
+        //servem para provar que o servidor gere bem threads bloqueadas
+        for (int i=0;i<NUM_CLIENTES_ESPERA; i++) {
+
+            final int id =i;
+            workers[i]=new Thread(() -> runWaiter(id));
             workers[i].start();
         }
 
-        // Dá tempo para os Waiters se registarem no servidor
+        //Dá tempo para os Waiters se registarem no servidor
         Thread.sleep(500);
 
-        // 2. LANÇAR CLIENTES DE CARGA (VENDAS E LEITURAS)
-        for (int i = 0; i < NUM_CLIENTES_NORMAIS; i++) {
-            final int id = i;
-            workers[NUM_CLIENTES_ESPERA + i] = new Thread(() -> runWorker(id));
+        //LANÇAR CLIENTES DE CARGA (VENDAS E LEITURAS)
+        for (int i=0;i<NUM_CLIENTES_NORMAIS;i++) {
+
+            final int id= i;
+
+            workers[NUM_CLIENTES_ESPERA + i]= new Thread(() -> runWorker(id));
             workers[NUM_CLIENTES_ESPERA + i].start();
         }
 
-        // 3. ESPERAR QUE OS WORKERS ACABEM
+        //ESPERAR QUE OS WORKERS ACABEM
         // Nota: Não esperamos pelos Waiters aqui porque eles podem ficar bloqueados se a condição não cumprir
-        for (int i = NUM_CLIENTES_ESPERA; i < workers.length; i++) {
+        for (int i=NUM_CLIENTES_ESPERA;i< workers.length; i++) {
+
             workers[i].join();
         }
 
@@ -58,19 +63,22 @@ public class LoadTester {
         System.exit(0);
     }
 
-    // --- LÓGICA DO CLIENTE NORMAL (MISTURA ESCRITA E LEITURA) ---
+    //LÓGICA DO CLIENTE NORMAL (MISTURA ESCRITA E LEITURA)
     private static void runWorker(int id) {
+
         try (ClientLib lib = new ClientLib()) {
+
             // Cada thread precisa da sua própria conexão
-            String user = "user" + id;
+            String user="user" + id;
             lib.register(user, "pass"); // Tenta registar (pode falhar se já existir, não faz mal)
             lib.login(user, "pass");
 
-            Random rand = new Random();
-            String[] produtos = {"Batata", "Arroz", "Massa", "Atum"};
+            Random rand=new Random();
+            String[] produtos ={"Batata", "Arroz", "Massa", "Atum"};
 
-            for (int j = 0; j < OPS_POR_CLIENTE; j++) {
-                String prod = produtos[rand.nextInt(produtos.length)];
+            for (int j =0;j < OPS_POR_CLIENTE;j++) {
+                String prod =produtos[rand.nextInt(produtos.length)];
+
                 try {
                     double r = rand.nextDouble();
 
@@ -87,21 +95,26 @@ public class LoadTester {
                         lib.getPrecoMedio(prod, 0);
                     }
                     sucessos.incrementAndGet();
+
                 } catch (Exception e) {
                     System.out.println("Erro no Cliente " + id + ": " + e.getMessage());
                     falhas.incrementAndGet();
                 }
             }
+
             System.out.println("Cliente " + id + " terminou.");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    // --- LÓGICA DO CLIENTE QUE ESPERA (NOTIFICAÇÕES) ---
+    // LÓGICA DO CLIENTE QUE ESPERA (NOTIFICAÇÕES)
     private static void runWaiter(int id) {
-        try (ClientLib lib = new ClientLib()) {
-            String user = "waiter" + id;
+
+        try (ClientLib lib= new ClientLib()) {
+
+            String user= "waiter" + id;
             lib.register(user, "pass");
             lib.login(user, "pass");
 
