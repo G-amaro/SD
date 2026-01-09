@@ -6,47 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="c52cfb5f-1b92-4182-8189-cc23b15aea36" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/ClientLib.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/ClientLib.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/DataSeeder.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/PovoamentoTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/Demultiplexer.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/Demultiplexer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/LoadTester.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/LoadTester.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/ScenarioTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/ScenarioTest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/TesteNotificacao.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/TesteNotificacao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/client/TextUI.java" beforeDir="false" afterPath="$PROJECT_DIR$/client/TextUI.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/IEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/IEngine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/OpCodes.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/OpCodes.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/Sale.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/Sale.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/common/TaggedConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/common/TaggedConnection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/client/ClientLib.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/ClientLib.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/client/DataSeeder.class" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer$Entry.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer$Entry.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/Demultiplexer.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/client/LoadTester.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/LoadTester.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/client/ScenarioTest.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/ScenarioTest.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/client/TesteNotificacao.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/TesteNotificacao.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/client/TextUI.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/client/TextUI.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/common/OpCodes.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/OpCodes.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/common/Sale.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/Sale.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection$Frame.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection$Frame.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/common/TaggedConnection.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/dados_servidor/dia_1.dat" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/server/CurrentDay.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/CurrentDay.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/server/DaySeries.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/DaySeries.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/server/HistoryManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/HistoryManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/server/ServerMain.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/ServerMain.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/server/Session.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/Session.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/server/TimeSeriesEngine.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/TimeSeriesEngine.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/server/UserManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/server/UserManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/out/production/SD/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/out/production/SD/users.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/CurrentDay.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/CurrentDay.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/DaySeries.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/DaySeries.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/HistoryManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/HistoryManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/ServerMain.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/ServerMain.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/Session.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/Session.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/TimeSeriesEngine.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/TimeSeriesEngine.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/UserManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/server/UserManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/users.txt" beforeDir="false" afterPath="$PROJECT_DIR$/users.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -216,7 +175,7 @@
       <workItem from="1765898128551" duration="62000" />
       <workItem from="1765970943284" duration="53000" />
       <workItem from="1767119377301" duration="1064000" />
-      <workItem from="1767464693878" duration="9439000" />
+      <workItem from="1767464693878" duration="9843000" />
     </task>
     <servers />
   </component>
